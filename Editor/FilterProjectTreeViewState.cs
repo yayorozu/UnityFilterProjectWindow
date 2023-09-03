@@ -11,5 +11,6 @@ namespace Yorozu.EditorTool
         [SerializeField]
         public Texture2D FilterIcon;
         public bool AssetsOnly;
+        public GUIContent SelectionContent;
     }
 }

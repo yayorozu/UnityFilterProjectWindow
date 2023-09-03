@@ -62,10 +62,7 @@ namespace Yorozu.EditorTool
                             child = new FilterProjectTreeViewItem()
                             {
                                 id = 0,
-                                depth = prevRoot.depth + 1,
-                                displayName = name,
                                 icon = EditorGUIUtility.IconContent("Folder Icon").image as Texture2D,
-                                IsFolder = isFolder,
                             };
                         }
                         else
@@ -74,12 +71,14 @@ namespace Yorozu.EditorTool
                             child = new FilterProjectTreeViewItem()
                             {
                                 id = asset.GetInstanceID(),
-                                depth = prevRoot.depth + 1,
-                                displayName = name,
                                 icon = AssetDatabase.GetCachedIcon(combinePath) as Texture2D,
-                                IsFolder = isFolder,
                             };
                         }
+
+                        child.depth = prevRoot.depth + 1;
+                        child.displayName = name;
+                        child.IsFolder = isFolder;
+                        child.Path = combinePath;
                         
                         prevRoot.AddChild(child);
                         prevRoot = child;
@@ -112,6 +111,20 @@ namespace Yorozu.EditorTool
         protected override void SelectionChanged(IList<int> selectedIds)
         {
             Selection.instanceIDs = selectedIds.ToArray();
+            if (selectedIds.Count > 0)
+            {
+                var row = FindRows(selectedIds)[0] as FilterProjectTreeViewItem;
+                var icon = AssetDatabase.GetCachedIcon(row.Path);
+                _filterState.SelectionContent = new GUIContent(row.Path, icon);
+            }
+        }
+
+        internal void OnGUISelectionPath(Rect rect)
+        {
+            if (_filterState.SelectionContent == null)
+                return;
+            
+            EditorGUI.LabelField(rect, _filterState.SelectionContent);
         }
     }
 }

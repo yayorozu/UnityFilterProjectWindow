@@ -77,7 +77,11 @@ namespace Yorozu.EditorTool
             }
             
             var rect = GUILayoutUtility.GetRect(0, float.MaxValue, 0, float.MaxValue);
+            rect.height -= EditorGUIUtility.singleLineHeight;
             _treeView.OnGUI(rect);
+            rect.y += rect.height;
+            rect.height = EditorGUIUtility.singleLineHeight;
+            _treeView.OnGUISelectionPath(rect);
         }
     }
 }
