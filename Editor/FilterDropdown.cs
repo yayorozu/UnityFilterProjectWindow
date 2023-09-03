@@ -112,6 +112,7 @@ namespace Yorozu.EditorTool
                 .SelectMany(a => a.GetTypes())
                 .Where(t => t.IsSubclassOf(typeof(UnityEngine.Object)))
                 .Where(t => !t.IsSubclassOf(typeof(UnityEngine.Component)))
+                .Where(t => !t.IsSubclassOf(typeof(AssetImporter)))
                 ;
             var root = new AdvancedDropdownItem("root");
             var extend = new AdvancedDropdownItem("Others");
@@ -124,13 +125,27 @@ namespace Yorozu.EditorTool
             root.AddChild(prefab);   
             foreach (var target in targets)
             {
-                var item = new AdvancedDropdownItem($"{target.Name}");
+                var name = target.Name; 
+                if (name == "MonoScript")
+                {
+                    name = "Script";
+                }
+                if (name == "SceneAsset")
+                {
+                    name = "Scene";
+                }
+                var item = new AdvancedDropdownItem(name);
                 item.icon = EditorGUIUtility.ObjectContent(null, target).image as Texture2D;
                 if (item.icon == null)
                     continue;
 
                 if (item.icon.name.EndsWith("DefaultAsset Icon") || item.icon.name.EndsWith("GameManager Icon"))
                     continue;
+
+                if (target.Name == "MonoScript")
+                {
+                    item.icon = EditorGUIUtility.IconContent("cs Script Icon").image as Texture2D;
+                }
                 
                 if (_defaultfilterTypes.Contains(target.Name))
                 {

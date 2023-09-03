@@ -13,7 +13,6 @@ namespace Yorozu.EditorTool
         
         internal FilterProjectTreeView(TreeViewState state) : base(state)
         {
-            showAlternatingRowBackgrounds = true;
             showBorder = true;
             Reload();
         }
