@@ -1,20 +1,18 @@
-using System;
-using System.Linq;
-using System.Text;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
 namespace Yorozu.EditorTool
 {
-    [EditorWindowTitle(title = "FilterProject", icon = "Project")]
     internal class FilterProjectWindow : EditorWindow
     {
         [MenuItem("Tools/FilterProject")]
         private static void ShowWindow()
         {
             var window = GetWindow<FilterProjectWindow>();
-            window.titleContent = new GUIContent("FilterProject");
+
+            var icon = EditorGUIUtility.IconContent("d_FilterByType").image as Texture2D;
+            window.titleContent = new GUIContent("Filter Project", icon);
             window.Show();
         }
         

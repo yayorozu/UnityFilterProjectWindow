@@ -17,6 +17,19 @@ namespace Yorozu.EditorTool
             Reload();
         }
 
+        protected override IList<TreeViewItem> BuildRows(TreeViewItem root)
+        {
+            var rows = base.BuildRows(root);
+            if (rootItem.hasChildren)
+            {
+                foreach (var child in rootItem.children)
+                {
+                    SetExpanded(child.id, true);
+                }
+            }
+            return rows;
+        }
+
         protected override TreeViewItem BuildRoot()
         {
             var root = new TreeViewItem()

@@ -1,1 +1,5 @@
 # UnityFilterProjectWindow
+
+ProjectWindow のフィルター機能を利用すると階層構造が破綻してしまうため、
+階層構造を維持しつつ確認できるツール
+
