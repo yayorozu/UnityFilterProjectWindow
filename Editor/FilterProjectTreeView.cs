@@ -27,20 +27,24 @@ namespace Yorozu.EditorTool
             };
 
             var guids = AssetDatabase.FindAssets($"t:{_filterState.FilterType}");
-            
             foreach (var guid in guids)
             {
                 var path = AssetDatabase.GUIDToAssetPath(guid);
-                if (path.StartsWith("Packages/"))
-                    continue;
-
                 var prevRoot = root;
                 var splitPaths = path.Split("/");
-                var combinePath = splitPaths[0];
-                for (var j = 1; j < splitPaths.Length; j++)
+                var combinePath = "";
+                for (var j = 0; j < splitPaths.Length; j++)
                 {
                     var splitPath = splitPaths[j];
-                    combinePath += $"/{splitPath}";
+                    if (string.IsNullOrEmpty(combinePath))
+                    {
+                        combinePath += $"{splitPath}";    
+                    }
+                    else
+                    {
+                        combinePath += $"/{splitPath}";
+                    }
+                    
                     var next = prevRoot.hasChildren ? prevRoot.children.FirstOrDefault(c => c.displayName == splitPath) : null;
                     if (next == null)
                     {
@@ -48,15 +52,33 @@ namespace Yorozu.EditorTool
                         var name = isFolder ? 
                             splitPath :
                             System.IO.Path.GetFileNameWithoutExtension(splitPath);
-                        var asset = AssetDatabase.LoadAssetAtPath<Object>(combinePath);
-                        var child = new FilterProjectTreeViewItem()
+
+                        FilterProjectTreeViewItem child = null;
+                        // Packages は取得できないので
+                        if (splitPath == "Packages")
                         {
-                            id = asset.GetInstanceID(),
-                            depth = prevRoot.depth + 1,
-                            displayName = name,
-                            icon = AssetDatabase.GetCachedIcon(combinePath) as Texture2D,
-                            IsFolder = isFolder,
-                        };
+                            child = new FilterProjectTreeViewItem()
+                            {
+                                id = 0,
+                                depth = prevRoot.depth + 1,
+                                displayName = name,
+                                icon = EditorGUIUtility.IconContent("Folder Icon").image as Texture2D,
+                                IsFolder = isFolder,
+                            };
+                        }
+                        else
+                        {
+                            var asset = AssetDatabase.LoadAssetAtPath<Object>(combinePath);
+                            child = new FilterProjectTreeViewItem()
+                            {
+                                id = asset.GetInstanceID(),
+                                depth = prevRoot.depth + 1,
+                                displayName = name,
+                                icon = AssetDatabase.GetCachedIcon(combinePath) as Texture2D,
+                                IsFolder = isFolder,
+                            };
+                        }
+                        
                         prevRoot.AddChild(child);
                         prevRoot = child;
                     }
