@@ -156,5 +156,42 @@ namespace Yorozu.EditorTool
             DragAndDrop.SetGenericData("Tool", new List<int>(args.draggedItemIDs));
             DragAndDrop.StartDrag(dragObjects.Length > 1 ? "<Multiple>" : dragObjects[0].name);
         }
+
+        protected override void ContextClickedItem(int id)
+        {
+            var rows = FindRows(new List<int>(){id});
+            if (rows.Count <= 0)
+                return;
+
+            var item = rows[0] as FilterProjectTreeViewItem;
+            
+            var @event = Event.current;
+            @event.Use();
+
+            var menu = new GenericMenu();
+            menu.AddItem(new GUIContent("Copy Path"), false, v =>
+            {
+                EditorGUIUtility.systemCopyBuffer = item.Path;
+            }, null);
+            menu.AddItem(new GUIContent("Expand"), false, v =>
+            {
+                SetExpandedRecursive(id, true);
+                EditorGUIUtility.systemCopyBuffer = item.Path;
+            }, null);
+            menu.AddItem(new GUIContent("Collapse"), false, v =>
+            {
+                SetExpandedRecursive(id, false);
+                EditorGUIUtility.systemCopyBuffer = item.Path;
+            }, null);
+            menu.AddSeparator("");
+            menu.AddItem(new GUIContent("Reimport"), false, v =>
+            {
+                AssetDatabase.ImportAsset(item.Path, ImportAssetOptions.ImportRecursive);
+
+            }, null);
+
+            // 各所で追加
+            menu.ShowAsContext();
+        }
     }
 }
