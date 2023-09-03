@@ -1,9 +1,13 @@
+using System;
+using System.Linq;
+using System.Text;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
 namespace Yorozu.EditorTool
 {
+    [EditorWindowTitle(title = "FilterProject", icon = "Project")]
     internal class FilterProjectWindow : EditorWindow
     {
         [MenuItem("Tools/FilterProject")]
@@ -16,37 +20,15 @@ namespace Yorozu.EditorTool
         
         private SearchField _searchField;
 
-        private string[] _filterTypes = new string[]
-        {
-            "AnimationClip",
-            "AudioClip",
-            "AudioMixer",
-            "ComputeShader",
-            "Font",
-            "Material",
-            "Mesh",
-            "Model",
-            "Prefab",
-            "Scene",
-            "Script",
-            "ScriptableObject",
-            "SpriteAtlas",
-            "Texture",
-            "VideoClip",
-            "VisualEffectAsset",
-        };
-
-        private int _filterIndex;
         private FilterProjectTreeView _treeView;
         [SerializeField]
         private FilterProjectTreeViewState _state;
-
+        
         private void Initialize()
         {
             _state ??= new FilterProjectTreeViewState();
             if (_treeView == null)
             {
-                _state.FilterType = _filterTypes[_filterIndex];
                 _treeView = new FilterProjectTreeView(_state);
             }
             if (_searchField == null)
@@ -62,29 +44,33 @@ namespace Yorozu.EditorTool
             
             using (new EditorGUILayout.HorizontalScope(EditorStyles.toolbar))
             {
-                using (var check = new EditorGUI.ChangeCheckScope())
+                var filterContent = new GUIContent(_state.FilterType, _state.FilterIcon);
+                EditorGUILayout.LabelField(filterContent, EditorStyles.label);
+                
+                var content = new GUIContent("Select Filter");
+                var buttonRect = GUILayoutUtility.GetRect(content, EditorStyles.toolbarButton);
+                if (GUI.Button(buttonRect, content, EditorStyles.toolbarButton))
                 {
-                    _filterIndex = EditorGUILayout.Popup("Filter", _filterIndex, _filterTypes, EditorStyles.toolbarPopup);
-                    if (check.changed)
+                    var state = new AdvancedDropdownState();
+                    var dropdown = new FilterDropdown(state);
+                    dropdown.OnSelect += (v, t) =>
                     {
-                        _state.FilterType = _filterTypes[_filterIndex];
-                        Rebuild();
-                    }
+                        _state.FilterType = v;
+                        _state.FilterIcon = t;
+                        
+                        if (_treeView != null)
+                            _treeView.Reload();
+                    };
+                    dropdown.Show(buttonRect);
+                    GUIUtility.ExitGUI();
                 }
 
+                GUILayout.FlexibleSpace();
                 _treeView.searchString =  _searchField.OnToolbarGUI(_treeView.searchString);
             }
             
             var rect = GUILayoutUtility.GetRect(0, float.MaxValue, 0, float.MaxValue);
             _treeView.OnGUI(rect);
-        }
-
-        private void Rebuild()
-        {
-            if (_treeView == null)
-                return;
-            
-            _treeView.Reload();
         }
     }
 }

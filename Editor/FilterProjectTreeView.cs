@@ -50,7 +50,6 @@ namespace Yorozu.EditorTool
                             splitPath :
                             System.IO.Path.GetFileNameWithoutExtension(splitPath);
                         var asset = AssetDatabase.LoadAssetAtPath<Object>(combinePath);
-                        var targetGUID = AssetDatabase.AssetPathToGUID(combinePath);
                         var child = new FilterProjectTreeViewItem()
                         {
                             id = asset.GetInstanceID(),
@@ -58,7 +57,6 @@ namespace Yorozu.EditorTool
                             displayName = name,
                             icon = AssetDatabase.GetCachedIcon(combinePath) as Texture2D,
                             IsFolder = isFolder,
-                            GUID = targetGUID,
                         };
                         prevRoot.AddChild(child);
                         prevRoot = child;
@@ -68,6 +66,11 @@ namespace Yorozu.EditorTool
                         prevRoot = next;
                     }
                 }
+            }
+            
+            if (!root.hasChildren)
+            {
+                root.children = new List<TreeViewItem>();
             }
 
             return root;
