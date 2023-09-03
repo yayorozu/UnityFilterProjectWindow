@@ -26,7 +26,9 @@ namespace Yorozu.EditorTool
                 depth = -1,
             };
 
-            var guids = AssetDatabase.FindAssets($"t:{_filterState.FilterType}");
+            var searchInFolders = _filterState.AssetsOnly ? new string[] {"Assets"} : null;
+
+            var guids = AssetDatabase.FindAssets($"t:{_filterState.FilterType}", searchInFolders);
             foreach (var guid in guids)
             {
                 var path = AssetDatabase.GUIDToAssetPath(guid);
