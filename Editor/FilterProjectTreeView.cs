@@ -98,6 +98,20 @@ namespace Yorozu.EditorTool
             return root;
         }
 
+        protected override void DoubleClickedItem(int id)
+        {
+            var rows = FindRows(new List<int>(){id});
+            if (rows.Count <= 0)
+                return;
+
+            var item = rows[0] as FilterProjectTreeViewItem;
+            var path = item.Path;
+            if (AssetDatabase.IsValidFolder(path))
+                EditorUtility.RevealInFinder(path);
+            else
+                AssetDatabase.OpenAsset(EditorUtility.InstanceIDToObject(item.id));
+        }
+
         protected override bool DoesItemMatchSearch(TreeViewItem item, string search)
         {
             var valid = base.DoesItemMatchSearch(item, search);
