@@ -1,7 +1,7 @@
 {
   "name": "yorozu.tool.filter-project-window",
   "version": "0.0.1",
-  "displayName": "FilterProjectWindow",
+  "displayName": "Filter Project Window",
   "description": "Tool to display only one type in ProjectWindow",
   "author": {
     "name": "Yorozu",
