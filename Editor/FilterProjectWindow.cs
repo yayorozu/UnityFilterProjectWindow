@@ -44,8 +44,6 @@ namespace Yorozu.EditorTool
             
             using (new EditorGUILayout.HorizontalScope(EditorStyles.toolbar))
             {
-                var filterContent = new GUIContent(_state.FilterType, _state.FilterIcon);
-                EditorGUILayout.LabelField(filterContent, EditorStyles.label);
                 using (var check = new EditorGUI.ChangeCheckScope())
                 {
                     _state.AssetsOnly = GUILayout.Toggle(_state.AssetsOnly, "Assets Only", EditorStyles.toolbarButton);
@@ -54,6 +52,9 @@ namespace Yorozu.EditorTool
                         _treeView?.Reload();   
                     }
                 }
+                var filterContent = new GUIContent(_state.FilterType, _state.FilterIcon);
+                EditorGUILayout.LabelField(filterContent, EditorStyles.label);
+
                 
                 var content = new GUIContent("Select Filter");
                 var buttonRect = GUILayoutUtility.GetRect(content, EditorStyles.toolbarPopup);

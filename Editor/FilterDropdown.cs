@@ -121,8 +121,13 @@ namespace Yorozu.EditorTool
             {
                 icon = EditorGUIUtility.IconContent("Prefab Icon").image as Texture2D,
             };
+            var scriptableObject = new AdvancedDropdownItem("ScriptableObject")
+            {
+                icon = EditorGUIUtility.IconContent("ScriptableObject Icon").image as Texture2D,
+            };
             
             root.AddChild(prefab);   
+            root.AddChild(scriptableObject);   
             foreach (var target in targets)
             {
                 var name = target.Name; 
