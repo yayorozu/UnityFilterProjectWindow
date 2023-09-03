@@ -126,5 +126,21 @@ namespace Yorozu.EditorTool
             
             EditorGUI.LabelField(rect, _filterState.SelectionContent);
         }
+
+        protected override bool CanStartDrag(CanStartDragArgs args) => true;
+
+        protected override void SetupDragAndDrop(SetupDragAndDropArgs args)
+        {
+            if (args.draggedItemIDs.Count <= 0)
+                return;
+
+            var dragObjects = args.draggedItemIDs.Select(EditorUtility.InstanceIDToObject).ToArray(); 
+                
+            DragAndDrop.PrepareStartDrag();
+            DragAndDrop.paths = null;
+            DragAndDrop.objectReferences = dragObjects;
+            DragAndDrop.SetGenericData("Tool", new List<int>(args.draggedItemIDs));
+            DragAndDrop.StartDrag(dragObjects.Length > 1 ? "<Multiple>" : dragObjects[0].name);
+        }
     }
 }
