@@ -29,6 +29,13 @@ namespace Yorozu.EditorTool
         {
             public static readonly GUIContent FilterContent = new ("Select Filter");
             public static readonly GUILayoutOption SearchMin = GUILayout.MinWidth(100);
+            public static readonly GUIContent RefreshContent;
+
+            static Styles()
+            {
+                var refreshTexture = EditorGUIUtility.IconContent("Refresh").image as Texture2D;
+                RefreshContent = new GUIContent(refreshTexture);
+            }
         }
         
         private void Initialize()
@@ -51,6 +58,11 @@ namespace Yorozu.EditorTool
             
             using (new EditorGUILayout.HorizontalScope(EditorStyles.toolbar))
             {
+                if (GUILayout.Button(Styles.RefreshContent, EditorStyles.toolbarButton))
+                {
+                    _treeView?.Reload();
+                }
+                
                 using (var check = new EditorGUI.ChangeCheckScope())
                 {
                     _state.AssetsOnly = GUILayout.Toggle(_state.AssetsOnly, "Assets Only", EditorStyles.toolbarButton);
@@ -58,20 +70,21 @@ namespace Yorozu.EditorTool
                     {
                         _treeView?.Reload();   
                     }
-                    var buttonRect = GUILayoutUtility.GetRect(Styles.FilterContent, EditorStyles.toolbarPopup);
-                    if (GUI.Button(buttonRect, Styles.FilterContent, EditorStyles.toolbarButton))
+                }
+                
+                var buttonRect = GUILayoutUtility.GetRect(Styles.FilterContent, EditorStyles.toolbarPopup);
+                if (GUI.Button(buttonRect, Styles.FilterContent, EditorStyles.toolbarButton))
+                {
+                    var state = new AdvancedDropdownState();
+                    var dropdown = new FilterDropdown(state);
+                    dropdown.OnSelect += (v, t) =>
                     {
-                        var state = new AdvancedDropdownState();
-                        var dropdown = new FilterDropdown(state);
-                        dropdown.OnSelect += (v, t) =>
-                        {
-                            _state.FilterContent = new GUIContent(v, t);
-                            _state.Width = v.Length * 7 + 16;
-                            _treeView?.Reload();
-                        };
-                        dropdown.Show(buttonRect);
-                        GUIUtility.ExitGUI();
-                    }
+                        _state.FilterContent = new GUIContent(v, t);
+                        _state.Width = v.Length * 7 + 16;
+                        _treeView?.Reload();
+                    };
+                    dropdown.Show(buttonRect);
+                    GUIUtility.ExitGUI();
                 }
                 GUILayout.Space(5);
                 EditorGUILayout.LabelField(_state.FilterContent, GUILayout.Width(_state.Width));
