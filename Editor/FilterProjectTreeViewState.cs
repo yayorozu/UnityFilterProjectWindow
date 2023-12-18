@@ -7,9 +7,9 @@ namespace Yorozu.EditorTool
     [Serializable]
     internal class FilterProjectTreeViewState : TreeViewState
     {
-        public string FilterType;
         [SerializeField]
-        public Texture2D FilterIcon;
+        public GUIContent FilterContent;
+        public float Width;
         public bool AssetsOnly;
         public GUIContent SelectionContent;
     }

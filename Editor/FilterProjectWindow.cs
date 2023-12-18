@@ -21,6 +21,15 @@ namespace Yorozu.EditorTool
         private FilterProjectTreeView _treeView;
         [SerializeField]
         private FilterProjectTreeViewState _state;
+
+        private GUILayoutOption _categoryWidth;
+        
+
+        private static class Styles
+        {
+            public static readonly GUIContent FilterContent = new ("Select Filter");
+            public static readonly GUILayoutOption SearchMin = GUILayout.MinWidth(100);
+        }
         
         private void Initialize()
         {
@@ -49,29 +58,27 @@ namespace Yorozu.EditorTool
                     {
                         _treeView?.Reload();   
                     }
-                }
-                var filterContent = new GUIContent(_state.FilterType, _state.FilterIcon);
-                EditorGUILayout.LabelField(filterContent, EditorStyles.label);
-
-                
-                var content = new GUIContent("Select Filter");
-                var buttonRect = GUILayoutUtility.GetRect(content, EditorStyles.toolbarPopup);
-                if (GUI.Button(buttonRect, content, EditorStyles.toolbarButton))
-                {
-                    var state = new AdvancedDropdownState();
-                    var dropdown = new FilterDropdown(state);
-                    dropdown.OnSelect += (v, t) =>
+                    var buttonRect = GUILayoutUtility.GetRect(Styles.FilterContent, EditorStyles.toolbarPopup);
+                    if (GUI.Button(buttonRect, Styles.FilterContent, EditorStyles.toolbarButton))
                     {
-                        _state.FilterType = v;
-                        _state.FilterIcon = t;
-                        _treeView?.Reload();
-                    };
-                    dropdown.Show(buttonRect);
-                    GUIUtility.ExitGUI();
+                        var state = new AdvancedDropdownState();
+                        var dropdown = new FilterDropdown(state);
+                        dropdown.OnSelect += (v, t) =>
+                        {
+                            _state.FilterContent = new GUIContent(v, t);
+                            _state.Width = v.Length * 7 + 16;
+                            _treeView?.Reload();
+                        };
+                        dropdown.Show(buttonRect);
+                        GUIUtility.ExitGUI();
+                    }
                 }
-
+                GUILayout.Space(5);
+                EditorGUILayout.LabelField(_state.FilterContent, GUILayout.Width(_state.Width));
+                
                 GUILayout.FlexibleSpace();
-                _treeView.searchString =  _searchField.OnToolbarGUI(_treeView.searchString);
+                
+                _treeView.searchString =  _searchField.OnToolbarGUI(_treeView.searchString, Styles.SearchMin);
             }
             
             var rect = GUILayoutUtility.GetRect(0, float.MaxValue, 0, float.MaxValue);
